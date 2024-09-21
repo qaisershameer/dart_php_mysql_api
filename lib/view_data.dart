@@ -1,27 +1,37 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ViewData extends StatefulWidget {
   const ViewData({super.key});
+
   @override
-  State<ViewData> createState() => _ViewDataState();
+  State<ViewData> createState() => ViewDataState();
 }
 
-class _ViewDataState extends State<ViewData> {
+class ViewDataState extends State<ViewData> {
   List userData = [];
-  // String url = 'http://192.168.1.19/accounts_api/view_data.php';
-  String url = 'https://college.jadeedmunshi.com/api/ledger/110201';
+  bool isLoading = false;
 
-  Future<void> getRecords() async {
+  getRecords() async {
+    String url = 'http://192.168.1.18/accounts_api/view_data.php';
+
+    setState(() {
+      isLoading = true; // Start loading
+    });
+
     try {
       var response = await http.get(Uri.parse(url));
       setState(() {
-        var data = jsonDecode(response.body);
-        userData = data['ledger'];
+        userData = jsonDecode(response.body);
+        isLoading = false; // Stop loading
       });
     } catch (e) {
       print(e);
+      setState(() {
+        isLoading = false; // Stop loading on error
+      });
     }
   }
 
@@ -38,22 +48,55 @@ class _ViewDataState extends State<ViewData> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('View Data'),
       ),
-      body: ListView.builder(
-          itemCount: userData.length,
-          itemBuilder: (context, index) {
-            return Card(
-              margin: const EdgeInsets.all(10),
-              child: ListTile(
-                leading: const Icon(Icons.heart_broken),
-                // title: Text(userData[index]['uName'] ?? 'No Name'),
-                // subtitle: Text(userData[index]['uEmail'] ?? 'No Email'),
-
-                title: Text(userData[index]['bal_transaction_type'] ?? 'No Name'),
-                subtitle: Text(userData[index]['bal_remarks'] ?? 'No Email'),
-
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.green), // You can customize the color
               ),
-            );
-          }),
+            )
+          : // Your normal widget tree here when not loading
+          ListView.builder(
+              itemCount: userData.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  margin: const EdgeInsets.all(1),
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.heart_broken,
+                      color: Colors.red,
+                    ),
+                    title: Text(
+                      userData[index]['uName']!,
+                      style: const TextStyle(color: Colors.green),
+                    ),
+                    subtitle: Text(
+                      userData[index]['uEmail']!,
+                      style: const TextStyle(color: Colors.blueGrey),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.settings,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
