@@ -24,7 +24,7 @@
 
     $sql = "INSERT INTO `users`(`uName`, `uEmail`, `uPwd`) VALUES ('$name','$email','$pwd')";
 
-    $exec = mysql_query($con, $sql);
+    $exec = mysqli_query($con, $sql);
 
     $array = [];
 
