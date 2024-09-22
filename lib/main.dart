@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'XAMPP MY SQL CRUD',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if(txtName.text != '' || txtEmail.text != '' || txtPwd.text != ''){
         try{
 
-          String url = 'http://192.168.1.18/accounts_api/insert_record.php';
+          String url = 'http://192.168.1.17/accounts_api/insert_record.php';
 
           var request = await http.post(Uri.parse(url), body: {
 
@@ -58,6 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
           var response = jsonDecode(request.body);
 
           if (response["success"] == "true"){
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('record inserted!'),
+              ),
+            );
 
             print('record inserted');
             txtName.text ='';
